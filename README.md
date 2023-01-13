@@ -89,3 +89,67 @@ for batch in data_loader:
 
 ## License
 Alpa is licensed under the [Apache-2.0 license](https://github.com/alpa-projects/alpa/blob/main/LICENSE).
+
+
+
+# Helper on how to install for LLM serving
+
+Install instructions: https://alpa.ai/install.html
+
+## Pre install activities
+
+- Install CUDA and cuDNN first:
+
+CUDA:
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget https://developer.download.nvidia.com/compute/cuda/12.0.0/local_installers/cuda-repo-ubuntu2204-12-0-local_12.0.0-525.60.13-1_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu2204-12-0-local_12.0.0-525.60.13-1_amd64.deb
+sudo cp /var/cuda-repo-ubuntu2204-12-0-local/cuda-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+sudo apt-get -y install cuda
+
+cuDNN:
+https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html
+
+NVIDIA-CUDA-toolkit:
+sudo apt install nvidia-cuda-toolkit
+
+NCCL library:
+https://docs.nvidia.com/deeplearning/nccl/install-guide/index.html#:~:text=Installing%20NCCL%20on%20Ubuntu%20requires,repository%20and%20a%20network%20repository.
+
+
+jaxlib:
+
+From wheel: https://alpa.ai/wheels.html
+download manually, then pip install XXX
+
+Extra installs for serving models:
+pip install "transformers<=4.23.1" fastapi uvicorn omegaconf jinja2
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+
+Install llm_serving package from alpa:
+cd alpa/examples
+pip install -e .
+
+Must have Python 3.9 or 3.8
+
+
+## Install
+
+
+virtualenv -p python3.9 env
+source ./env/bin/activate
+pip install cupy-cuda116
+--> install pre dependencies (cuda, cudnn, nvidia toolkit, nccl)
+pip install alpa
+--> install jaxlib
+pip install "transformers<=4.23.1" fastapi uvicorn omegaconf jinja2
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+cd examples
+pip install -e .
+
+Test installation:
+
+ray start --head
+python -m alpa.test_install
