@@ -153,3 +153,29 @@ Test installation:
 
 ray start --head
 python -m alpa.test_install
+
+
+## ISSUES
+
+cupy_backends.cuda.libs.nccl.NcclError: NCCL_ERROR_UNHANDLED_CUDA_ERROR: unhandled cuda error, it is mainly due to the compatibility issues between CUDA, NCCL, and GPU driver versions.
+    https://github.com/alpa-projects/alpa/issues/496
+
+SOLUTION:
+python -m cupyx.tools.install_library --cuda 11.6 --library nccl
+
+
+Problem: FileNotFoundError: [Errno 2] No such file or directory: '/home/bundenth/opt_weights/opt-125m-np/decoder.embed_tokens.weight'
+
+SOLUTION:
+All nodes must have access to the same file path (including username!)
+
+
+Problem BLAS:
+
+(MeshHostWorker pid=7385, ip=192.168.0.27) 2023-01-16 18:15:42.416882: E external/org_tensorflow/tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:219] failed to create cublas handle: cublas error
+(MeshHostWorker pid=7385, ip=192.168.0.27) 2023-01-16 18:15:42.416914: E external/org_tensorflow/tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:221] Failure to initialize cublas may be due to OOM (cublas needs some free memory when you initialize it, and your deep-learning framework may have preallocated more than its fair share), or may be because this binary was not built with support for the GPU in your machine.
+(MeshHostWorker pid=7385, ip=192.168.0.27) 2023-01-16 18:15:42.416966: E external/org_tensorflow/tensorflow/compiler/xla/pjrt/pjrt_stream_executor_client.cc:2156] Execution of replica 0 failed: INTERNAL: Attempting to perform BLAS operation using StreamExecutor without BLAS support
+
+SOLUTION (pre allocate less mem?)
+
+export XLA_PYTHON_CLIENT_MEM_FRACTION=0.6
