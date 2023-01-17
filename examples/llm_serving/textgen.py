@@ -1,5 +1,6 @@
 """Use huggingface/transformers interface and Alpa backend for distributed inference."""
 import argparse
+import time
 
 import numpy as np
 from transformers import AutoTokenizer
@@ -25,10 +26,12 @@ def main(args):
     }
     
     # Load the model
+    t = time.time()
     model = get_model(model_name=args.model,
                       path="~/opt_weights",
                       batch_size=args.n_prompts,
                       **generate_params)
+    print(f"Build time: {time.time() - t:.2f} seconds")
 
     # Generate
     prompts = [
@@ -38,6 +41,7 @@ def main(args):
         "University of California Berkeley is a public university"
     ]
     prompts = prompts[:args.n_prompts]
+    t = time.time()
     input_ids = tokenizer(prompts, return_tensors="pt", padding="longest").input_ids
     output_ids = model.generate(input_ids=input_ids,
                                 max_length=64,
@@ -49,6 +53,8 @@ def main(args):
     for i, output in enumerate(outputs):
         print(f"{i}: {output}")
         print(100 * '-')
+    
+    print(f"Inference time: {time.time() - t:.2f} seconds")
     
 
 if __name__ == "__main__":
